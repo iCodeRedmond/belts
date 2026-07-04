@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iCode Green Belt · Journey + Dashboard + Lesson 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --belt:#2E9E16;--belt-bright:#3DBB1F;--belt-deep:#0B2818;
+    --py-blue:#2D6A9F;--py-yellow:#FFD43B;--amber:#F59E0B;
+    --paper:#FFF;--paper-tint:#F3F9F1;--ink:#102016;--muted:#5C6B60;--line:#D6E4D2;
+    --proc:#2D6A9F;--conc:#B4521A;--both:#6B3FA0;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  body{margin:0;font-family:'Lexend',sans-serif;color:var(--ink);background:#E8EFE5;line-height:1.45;}
+  .page{width:8.5in;min-height:11in;margin:24px auto;background:var(--paper);box-shadow:0 8px 40px rgba(11,40,24,.18);overflow:hidden;position:relative;}
+  .page.flight{display:flex;flex-direction:column;}
+
+  /* masthead */
+  .masthead{background:linear-gradient(120deg,var(--belt) 0%,var(--belt-bright) 60%,#5BD636 100%);color:#fff;padding:20px 40px 18px;position:relative;flex-shrink:0;}
+  .masthead::after{content:"";position:absolute;left:0;right:0;bottom:0;height:6px;background:repeating-linear-gradient(90deg,var(--belt-deep) 0 14px,transparent 14px 28px);opacity:.55;}
+  .brandrow{display:flex;justify-content:space-between;align-items:flex-start;}
+  .brand{font-family:'Space Grotesk';font-weight:700;font-size:12px;letter-spacing:.3em;text-transform:uppercase;opacity:.92;}
+  .beltbadge{font-family:'Space Grotesk';font-weight:700;font-size:11px;letter-spacing:.16em;border:1.5px solid rgba(255,255,255,.85);border-radius:999px;padding:5px 14px;text-transform:uppercase;}
+  .masthead h1{font-family:'Space Grotesk';font-weight:700;font-size:36px;line-height:1;margin:12px 0 4px;}
+  .masthead .sub{font-size:13.5px;opacity:.95;max-width:74%;}
+
+  .body{padding:24px 36px 30px;}
+  .eyebrow{font-family:'Space Grotesk';font-weight:600;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--belt);margin:0 0 4px;}
+  h2.sec{font-family:'Space Grotesk';font-weight:700;font-size:21px;margin:0 0 14px;color:var(--belt-deep);}
+
+  /* flight journey page */
+  .legendrow{display:flex;gap:20px;align-items:center;padding:11px 40px 2px;flex-wrap:wrap;flex-shrink:0;}
+  .legendrow .it{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--muted);}
+  .swatch{width:15px;height:15px;border-radius:50%;border:2px solid var(--belt);display:inline-block;}
+  .swatch.full{background:var(--belt);}
+  .mapwrap{flex:1;padding:0 22px 6px;}
+  svg{width:100%;height:auto;display:block;}
+  .foot{padding:0 40px 24px;flex-shrink:0;}
+  .foot .note{font-size:11px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px;}
+  .foot .note b{color:var(--belt-deep);}
+
+  /* legend strip (dashboard) */
+  .legendstrip{display:flex;gap:22px;align-items:center;margin-bottom:14px;flex-wrap:wrap;}
+  .legendstrip .it{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--muted);}
+  .legendstrip .c{width:14px;height:14px;border-radius:50%;border:1.6px solid var(--belt);display:inline-block;}
+  .legendstrip .c.full{background:var(--belt);}
+
+  /* map grid */
+  table.map{width:100%;border-collapse:separate;border-spacing:0;margin-bottom:20px;}
+  table.map th{font-family:'Space Grotesk';font-weight:600;font-size:11px;color:var(--belt-deep);text-transform:uppercase;letter-spacing:.05em;padding:6px 0 8px;text-align:center;}
+  table.map th.corner{text-align:left;padding-left:6px;width:124px;}
+  table.map th.donecol{width:52px;}
+  table.map td{border:1px solid var(--line);padding:11px 4px;text-align:center;vertical-align:middle;background:#fff;height:52px;}
+  table.map td.sname{text-align:left;padding-left:8px;border:none;background:transparent;white-space:nowrap;}
+  table.map td.sname b{font-family:'Space Grotesk';font-size:14px;color:#fff;background:var(--belt);border-radius:7px;padding:2px 9px;margin-right:7px;display:inline-block;}
+  table.map td.sname span{font-size:9.5px;color:var(--muted);}
+  table.map td.done{font-family:'Space Grotesk';font-weight:700;font-size:12px;color:var(--belt);background:var(--paper-tint);}
+  table.map tbody tr:first-child td{border-top:1px solid var(--line);}
+  .cluster{display:inline-flex;flex-wrap:wrap;gap:4px;justify-content:center;max-width:58px;}
+  .cluster i{width:11px;height:11px;border:1.5px solid var(--belt);border-radius:50%;display:inline-block;}
+  .cluster i.full{background:var(--belt);}
+  td.tbd{color:#C4D2BE;font-size:15px;}
+
+  /* belt ladder */
+  .beltladder{border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;background:var(--paper-tint);}
+  .bl-title{font-family:'Space Grotesk';font-weight:700;font-size:13.5px;color:var(--belt-deep);margin-bottom:12px;}
+  .bl-track{display:flex;align-items:flex-start;justify-content:space-between;gap:3px;}
+  .belt{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;}
+  .belt .chip{width:32px;height:32px;border-radius:50%;background:var(--c);border:1.5px solid rgba(11,40,24,.25);color:#fff;font-family:'Space Grotesk';font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;margin-bottom:6px;}
+  .belt b{font-size:10.5px;font-family:'Space Grotesk';color:var(--belt-deep);line-height:1.1;}
+  .belt i{font-size:8px;color:var(--muted);font-style:normal;margin-top:2px;}
+  .belt.now .chip{width:40px;height:40px;font-size:16px;box-shadow:0 0 0 4px rgba(46,158,22,.22);border-color:var(--belt);}
+  .belt.now em{font-style:normal;font-size:7.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#fff;background:var(--belt);border-radius:999px;padding:2px 6px;margin-top:3px;}
+
+  .footnote{margin-top:16px;font-size:10.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;}
+  .footnote b{color:var(--belt-deep);}
+
+  /* ---- detail page ---- */
+  .l1head{display:flex;align-items:center;gap:14px;margin-bottom:6px;}
+  .l1head .no{font-family:'Space Grotesk';font-weight:700;font-size:13px;background:var(--belt);color:#fff;border-radius:8px;padding:5px 11px;}
+  .l1head .t{font-family:'Space Grotesk';font-weight:700;font-size:22px;color:var(--belt-deep);}
+  .tags{display:flex;gap:18px;flex-wrap:wrap;margin:10px 0 20px;font-size:11.5px;}
+  .tag{display:flex;align-items:center;gap:7px;}
+  .tag .d{width:13px;height:13px;border-radius:4px;}
+  .tag .d.proc{background:var(--proc);}.tag .d.conc{background:var(--conc);}.tag .d.both{background:linear-gradient(135deg,var(--proc) 0 50%,var(--conc) 50%);}
+  .tag span{color:var(--muted);}
+
+  .skill{border:1.5px solid var(--line);border-radius:13px;margin-bottom:13px;overflow:hidden;break-inside:avoid;}
+  .sk-top{display:grid;grid-template-columns:22px 1fr auto;gap:13px;align-items:start;padding:14px 17px;}
+  .sk-dot{width:18px;height:18px;border-radius:5px;margin-top:2px;}
+  .sk-dot.proc{background:var(--proc);}.sk-dot.conc{background:var(--conc);}.sk-dot.both{background:linear-gradient(135deg,var(--proc) 0 50%,var(--conc) 50%);}
+  .sk-name{font-weight:600;font-size:14.5px;}
+  .sk-name code{background:var(--paper-tint);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:12.5px;color:var(--py-blue);}
+  .sk-sub{font-size:11.5px;color:var(--muted);margin-top:3px;}
+  .sk-xp{font-family:'Space Grotesk';font-weight:700;font-size:13px;color:var(--amber);white-space:nowrap;}
+
+  .sk-gates{display:flex;gap:26px;align-items:center;flex-wrap:wrap;padding:12px 17px;border-top:1px solid var(--line);background:var(--paper-tint);}
+  .g{display:flex;align-items:center;gap:9px;}
+  .g .lab{font-size:9px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;}
+  .g .lab.a{color:var(--belt);}.g .lab.f{color:var(--amber);}
+  .g .r{width:19px;height:19px;border:1.8px solid var(--belt);border-radius:50%;display:inline-block;}
+  .g .r.f{border-color:var(--amber);}
+  .g .ft{font-size:9.5px;color:var(--muted);font-style:italic;}
+  .stk{width:36px;height:36px;border:1.5px dashed var(--belt);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--belt);text-align:center;line-height:1.05;margin-left:auto;}
+
+  .cmds{padding:11px 17px 14px;border-top:1px solid var(--line);}
+  .cmds .ttl{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:9px;}
+  .cmdgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+  .cmd{display:flex;align-items:center;gap:7px;font-size:11.5px;}
+  .cmd .box{width:14px;height:14px;border:1.5px solid var(--belt);border-radius:4px;flex-shrink:0;}
+  .cmd code{font-size:11px;color:var(--py-blue);}
+
+  @media print{
+    body{background:#fff;}
+    .page{margin:0;box-shadow:none;width:auto;min-height:auto;}
+    .page + .page{page-break-before:always;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== PAGE 1 — FLIGHT JOURNEY ===== -->
+<div class="page flight">
+  <div class="masthead">
+    <div class="brandrow"><div class="brand">iCode · Green Belt</div><div class="beltbadge">★ Flight Journey</div></div>
+    <h1>Cadet to Captain</h1>
+    <div class="sub">Take off from SeaTac as a Python Cadet and fly all the way to your tropical destination as a Python Captain. Color a waypoint each time you clear a lesson and climb higher!</div>
+  </div>
+  <div class="legendrow">
+    <div class="it"><span class="swatch"></span> lesson to fly</div>
+    <div class="it"><span class="swatch full"></span> lesson cleared — color it in!</div>
+    <div class="it">🚩 sprint complete</div>
+    <div class="it">Climb from the bottom to the top ↑</div>
+  </div>
+  <div class="mapwrap">
+    <svg id="map" viewBox="0 0 780 1015" xmlns="http://www.w3.org/2000/svg" aria-label="Flight journey map"></svg>
+  </div>
+  <div class="foot">
+    <div class="note"><b>How it works:</b> Your plane starts parked on the SeaTac runway at Sprint 1 · Lesson 1. Each circle is one lesson — 8 per sprint, 8 sprints, 64 stops to the island. Fill a circle when a lesson is cleared; color a whole row and raise the 🚩. Finish Sprint 8 and you land at the island with your Captain's wings. <b>Parents:</b> how high the colored trail has climbed shows how far your child has flown.</div>
+  </div>
+</div>
+
+<!-- ===== PAGE 2 — DASHBOARD (9-sprint grid) ===== -->
+<div class="page">
+  <div class="masthead">
+    <div class="brandrow"><div class="brand">iCode · Green Belt</div><div class="beltbadge">★ Mission Map</div></div>
+    <h1>Pilot Progress Map</h1>
+    <div class="sub">The whole Green Belt on one page. Each circle is a skill — color it in when you've mastered it (3 reps done). A full row means a sprint is complete.</div>
+  </div>
+
+  <div class="body">
+    <div class="legendstrip">
+      <div class="it"><span class="c"></span> skill to learn</div>
+      <div class="it"><span class="c full"></span> skill mastered</div>
+      <div class="it">Each lesson box = one circle per skill</div>
+    </div>
+
+    <table class="map">
+      <thead>
+        <tr><th class="corner">Sprint</th><th>L1</th><th>L2</th><th>L3</th><th>L4</th><th>L5</th><th>L6</th><th>L7</th><th>L8</th><th class="donecol">Done</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="sname"><b>1</b><span>Python &amp; Drones</span></td>
+          <td><span class="cluster"><i class="full"></i><i class="full"></i><i class="full"></i><i></i><i></i></span></td>
+          <td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td>
+          <td class="done">__ / 8</td>
+        </tr>
+        <tr><td class="sname"><b>2</b><span>&nbsp;</span></td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="done">__ / 8</td></tr>
+        <tr><td class="sname"><b>3</b><span>&nbsp;</span></td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="done">__ / 8</td></tr>
+        <tr><td class="sname"><b>4</b><span>&nbsp;</span></td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="done">__ / 8</td></tr>
+        <tr><td class="sname"><b>5</b><span>&nbsp;</span></td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="done">__ / 8</td></tr>
+        <tr><td class="sname"><b>6</b><span>&nbsp;</span></td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="done">__ / 8</td></tr>
+        <tr><td class="sname"><b>7</b><span>&nbsp;</span></td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="done">__ / 8</td></tr>
+        <tr><td class="sname"><b>8</b><span>&nbsp;</span></td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="done">__ / 8</td></tr>
+        <tr><td class="sname"><b>9</b><span>Belt Test ★</span></td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="tbd">—</td><td class="done">__ / 8</td></tr>
+      </tbody>
+    </table>
+
+    <div class="beltladder">
+      <div class="bl-title">The iCode Belt Journey — 10 belts from first steps to Black Belt</div>
+      <div class="bl-track">
+        <div class="belt"><span class="chip" style="--c:#9AD0F5;color:#0B2818;">1</span><b>STEM Jr</b><i>5–7</i></div>
+        <div class="belt"><span class="chip" style="--c:#C8E6C9;color:#0B2818;">2</span><b>Foundation</b><i>6–8</i></div>
+        <div class="belt"><span class="chip" style="--c:#FFF;color:#0B2818;border-color:#9AA5A0;">3</span><b>White</b><i>8–11 · entry</i></div>
+        <div class="belt"><span class="chip" style="--c:#B0B6B3;color:#0B2818;">4</span><b>Gray</b><i>8–11</i></div>
+        <div class="belt"><span class="chip" style="--c:#F39C12;">5</span><b>Orange</b><i>8–11</i></div>
+        <div class="belt"><span class="chip" style="--c:#F7D000;color:#0B2818;">6</span><b>Yellow</b><i>9–12</i></div>
+        <div class="belt now"><span class="chip" style="--c:#2E9E16;">7</span><b>Green</b><i>10–13</i><em>You are here</em></div>
+        <div class="belt"><span class="chip" style="--c:#D7322B;">8</span><b>Red</b><i>11–15</i></div>
+        <div class="belt"><span class="chip" style="--c:#2D6A9F;">9</span><b>Blue</b><i>11–15</i></div>
+        <div class="belt"><span class="chip" style="--c:#1A1A1A;">10</span><b>Black</b><i>13+ · capstone</i></div>
+      </div>
+    </div>
+
+    <div class="footnote">
+      <b>Reading the map:</b> Sprint 1 · Lesson 1 is shown filled in as the example — 3 of its 5 skills mastered. The other boxes show <b>—</b> until each lesson's skills are mapped; then they'll fill with the right number of circles. Flip to the next page for the full Lesson 1 detail.
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE 3 — LESSON 1 DETAIL ===== -->
+<div class="page">
+  <div class="body" style="padding-top:34px;">
+    <div class="l1head"><span class="no">Sprint 1 · Lesson 1</span><span class="t">Introduction to Python</span></div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 4px;max-width:64ch;">The 5 skills behind Lesson 1's circles on the map. Each needs <b>3 accuracy reps in one session</b> (Pre-Flight) to unlock game time, then a <b>Solo Flight</b> later to prove it stuck.</p>
+    <div class="tags">
+      <div class="tag"><span class="d proc"></span><b>🔧 Procedural</b><span>— you can do it</span></div>
+      <div class="tag"><span class="d conc"></span><b>💡 Conceptual</b><span>— you know why</span></div>
+      <div class="tag"><span class="d both"></span><b>⚙️ Both</b><span>— engineer-grade</span></div>
+    </div>
+
+    <div class="skill">
+      <div class="sk-top">
+        <span class="sk-dot proc"></span>
+        <div><div class="sk-name">Output with <code>print("…")</code></div><div class="sk-sub">🔧 Procedural · make the program say something and read the result</div></div>
+        <span class="sk-xp">2 XP</span>
+      </div>
+      <div class="sk-gates">
+        <div class="g"><span class="lab a">Pre-Flight ×3</span><span class="r"></span><span class="r"></span><span class="r"></span></div>
+        <div class="g"><span class="lab f">Solo Flight</span><span class="r f"></span><span class="ft">⏱ timed</span></div>
+        <div class="stk">place<br>sticker</div>
+      </div>
+    </div>
+
+    <div class="skill">
+      <div class="sk-top">
+        <span class="sk-dot proc"></span>
+        <div><div class="sk-name">Calculate numbers with Python</div><div class="sk-sub">🔧 Procedural · use Python as a calculator (+ − × ÷)</div></div>
+        <span class="sk-xp">2 XP</span>
+      </div>
+      <div class="sk-gates">
+        <div class="g"><span class="lab a">Pre-Flight ×3</span><span class="r"></span><span class="r"></span><span class="r"></span></div>
+        <div class="g"><span class="lab f">Solo Flight</span><span class="r f"></span><span class="ft">⏱ timed</span></div>
+        <div class="stk">place<br>sticker</div>
+      </div>
+    </div>
+
+    <div class="skill">
+      <div class="sk-top">
+        <span class="sk-dot both"></span>
+        <div><div class="sk-name">Import a library — <code>from easytello import tello</code></div><div class="sk-sub">⚙️ Both · bring in code others wrote, and explain why we don't rewrite it</div></div>
+        <span class="sk-xp">4 XP</span>
+      </div>
+      <div class="sk-gates">
+        <div class="g"><span class="lab a">Pre-Flight ×3</span><span class="r"></span><span class="r"></span><span class="r"></span></div>
+        <div class="g"><span class="lab f">Solo Flight</span><span class="r f"></span><span class="ft">🧠 new mission</span></div>
+        <div class="stk">place<br>sticker</div>
+      </div>
+    </div>
+
+    <div class="skill">
+      <div class="sk-top">
+        <span class="sk-dot proc"></span>
+        <div><div class="sk-name">Create the drone object — <code>my_drone = tello.Tello()</code></div><div class="sk-sub">🔧 Procedural · make a drone you can send commands to</div></div>
+        <span class="sk-xp">3 XP</span>
+      </div>
+      <div class="sk-gates">
+        <div class="g"><span class="lab a">Pre-Flight ×3</span><span class="r"></span><span class="r"></span><span class="r"></span></div>
+        <div class="g"><span class="lab f">Solo Flight</span><span class="r f"></span><span class="ft">⏱ timed</span></div>
+        <div class="stk">place<br>sticker</div>
+      </div>
+    </div>
+
+    <div class="skill">
+      <div class="sk-top">
+        <span class="sk-dot both"></span>
+        <div><div class="sk-name">Issue movement commands — <code>my_drone.forward(5)</code></div><div class="sk-sub">⚙️ Both · same pattern every time: <code>my_drone.command(value)</code>. The 8 commands below <b>are</b> your reps.</div></div>
+        <span class="sk-xp">5 XP</span>
+      </div>
+      <div class="cmds">
+        <div class="ttl">Fly each one to build the skill</div>
+        <div class="cmdgrid">
+          <div class="cmd"><span class="box"></span><code>.forward()</code></div>
+          <div class="cmd"><span class="box"></span><code>.back()</code></div>
+          <div class="cmd"><span class="box"></span><code>.cw()</code></div>
+          <div class="cmd"><span class="box"></span><code>.ccw()</code></div>
+          <div class="cmd"><span class="box"></span><code>.right()</code></div>
+          <div class="cmd"><span class="box"></span><code>.left()</code></div>
+          <div class="cmd"><span class="box"></span><code>.up()</code></div>
+          <div class="cmd"><span class="box"></span><code>.down()</code></div>
+        </div>
+      </div>
+      <div class="sk-gates">
+        <div class="g"><span class="lab a">Pre-Flight ×3</span><span class="r"></span><span class="r"></span><span class="r"></span></div>
+        <div class="g"><span class="lab f">Solo Flight</span><span class="r f"></span><span class="ft">🧠 new mission</span></div>
+        <div class="stk">place<br>sticker</div>
+      </div>
+    </div>
+
+    <div class="footnote">
+      <b>Lesson 1 total: 16 XP · 5 skills.</b> When all 5 skills are mastered, color in all 5 circles in the Lesson 1 box on the Mission Map. <b>Mastered = both gates cleared:</b> Pre-Flight proves accuracy (in class), Solo Flight proves fluency — ⏱ timed for 🔧 skills, 🧠 a new task for 💡/⚙️ skills.
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const svg=document.getElementById('map');
+  const NS='http://www.w3.org/2000/svg';
+  const SPRINTS=8,LESSONS=8;
+  const xLeft=104,xRight=676,yBottom=842,dy=94;
+  const dx=(xRight-xLeft)/(LESSONS-1), center=(xLeft+xRight)/2;
+  const el=(n,a)=>{const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);return e;};
+  const txt=(x,y,s,a)=>{const t=el('text',Object.assign({x,y,'text-anchor':'middle'},a||{}));t.textContent=s;svg.appendChild(t);return t;};
+
+  // reusable realistic airliner (drawn facing right; set dir:-1 to face left)
+  function drawJet(o){
+    const cx=o.cx, cy=o.cy, scale=o.scale||1, dir=o.dir||1, pitch=o.pitch||0, gear=(o.gear!==false);
+    const g=el('g',{transform:`translate(${cx} ${cy}) rotate(${pitch}) scale(${scale*dir} ${scale})`});
+    const add=(n,a)=>g.appendChild(el(n,a));
+    add('polygon',{points:'4,5 -12,5 -32,19 -14,19',fill:'#AEB9C2',stroke:'#94A3AC','stroke-width':0.8});
+    add('polygon',{points:'-44,-1 -60,-6 -44,2',fill:'#AEB9C2'});
+    add('path',{d:'M -52 0 C -52 -7 -40 -8 -20 -8 L 34 -8 C 50 -8 60 -4 64 0 C 60 4 50 8 34 8 L -20 8 C -40 8 -52 7 -52 0 Z',fill:'#FFFFFF',stroke:'var(--belt-deep)','stroke-width':1.4});
+    add('path',{d:'M -50 1.5 L 46 1',stroke:'var(--belt)','stroke-width':2.4,'stroke-linecap':'round'});
+    for(let wx=30; wx>=-22; wx-=7){ add('circle',{cx:wx,cy:-2.4,r:1.5,fill:'#21465F'}); }
+    add('path',{d:'M 50 -3.4 L 58 -1.6 L 50 0.6 Z',fill:'#21465F'});
+    add('polygon',{points:'-30,-6 -46,-6 -52,-28 -41,-28',fill:'var(--belt)'});
+    add('polygon',{points:'-34,-6 -46,-6 -51,-26 -43,-26',fill:'#246F12'});
+    add('polygon',{points:'10,6 -8,6 -30,22 -10,22',fill:'#C3CED6',stroke:'#9DB0BB','stroke-width':1});
+    add('ellipse',{cx:-13,cy:18,rx:8,ry:4.2,fill:'#E6ECEF',stroke:'#9DB0BB','stroke-width':1});
+    add('ellipse',{cx:-20,cy:18,rx:1.7,ry:3.1,fill:'#566873'});
+    if(gear){
+      add('line',{x1:40,y1:8,x2:40,y2:18,stroke:'#3A3A3A','stroke-width':1.6});
+      add('circle',{cx:40,cy:19.6,r:3,fill:'#2C2C2C'}); add('circle',{cx:40,cy:19.6,r:1,fill:'#9AA0A4'});
+      add('line',{x1:-8,y1:8,x2:-8,y2:18,stroke:'#3A3A3A','stroke-width':1.8});
+      add('circle',{cx:-8,cy:20,r:3.4,fill:'#2C2C2C'}); add('circle',{cx:-8,cy:20,r:1.1,fill:'#9AA0A4'});
+    }
+    svg.appendChild(g);
+  }
+
+  // defs
+  const defs=el('defs',{});
+  const lg=el('linearGradient',{id:'mtn',x1:0,y1:0,x2:0,y2:1});
+  [['0%','#F7FBFE'],['50%','#DCEBF5'],['100%','#AEC9DD']].forEach(s=>lg.appendChild(el('stop',{offset:s[0],'stop-color':s[1]})));
+  defs.appendChild(lg);
+  const sk=el('linearGradient',{id:'sky',x1:0,y1:0,x2:0,y2:1});
+  [['0%','#E4F2FB'],['100%','#F4FAFD']].forEach(s=>sk.appendChild(el('stop',{offset:s[0],'stop-color':s[1]})));
+  defs.appendChild(sk);
+  svg.appendChild(defs);
+
+  // bands
+  svg.appendChild(el('rect',{x:0,y:0,width:780,height:190,fill:'url(#sky)'}));
+  svg.appendChild(el('rect',{x:0,y:864,width:780,height:151,fill:'#EAF3E4'}));
+
+  /* destination island (top-left) */
+  svg.appendChild(el('circle',{cx:706,cy:50,r:26,fill:'#FFE9A8'}));
+  svg.appendChild(el('circle',{cx:706,cy:50,r:17,fill:'#FFD43B'}));
+  svg.appendChild(el('path',{d:'M60 152 Q104 144 148 152 T236 152 T324 152',fill:'none',stroke:'#7FC4E8','stroke-width':3,'stroke-linecap':'round'}));
+  svg.appendChild(el('path',{d:'M84 164 Q128 156 172 164 T260 164',fill:'none',stroke:'#A9D8F0','stroke-width':2.5,'stroke-linecap':'round'}));
+  svg.appendChild(el('ellipse',{cx:190,cy:140,rx:72,ry:16,fill:'#F2D9A0'}));
+  svg.appendChild(el('ellipse',{cx:190,cy:134,rx:46,ry:11,fill:'#86C05A'}));
+  svg.appendChild(el('path',{d:'M188 131 Q182 103 173 84',fill:'none',stroke:'#9A6A3A','stroke-width':5.5,'stroke-linecap':'round'}));
+  ['M173 84 Q147 71 125 78','M173 84 Q156 60 136 54','M173 84 Q193 62 217 56','M173 84 Q199 74 223 84','M173 84 Q173 67 171 52'].forEach(d=>svg.appendChild(el('path',{d,fill:'none',stroke:'#2E9E16','stroke-width':6.5,'stroke-linecap':'round'})));
+  svg.appendChild(el('circle',{cx:173,cy:84,r:4.5,fill:'#7A4A22'}));
+  svg.appendChild(el('path',{d:'M228 133 Q234 116 240 103',fill:'none',stroke:'#9A6A3A','stroke-width':3.5,'stroke-linecap':'round'}));
+  ['M240 103 Q225 95 213 99','M240 103 Q242 88 236 80','M240 103 Q255 93 267 97'].forEach(d=>svg.appendChild(el('path',{d,fill:'none',stroke:'#3DBB1F','stroke-width':4,'stroke-linecap':'round'})));
+  drawJet({cx:336, cy:96, scale:1.15, dir:-1, pitch:7, gear:true});
+  svg.appendChild(el('rect',{x:36,y:18,width:212,height:42,rx:12,fill:'var(--amber)'}));
+  txt(142,40,'🏝️ Python Captain',{fill:'#fff','font-family':'Space Grotesk','font-weight':'700','font-size':'15'});
+  txt(142,54,'Land here — wings earned at Sprint 8!',{fill:'#fff','font-family':'Lexend','font-size':'8.5',opacity:.95});
+
+  /* origin — SeaTac (bottom) */
+  svg.appendChild(el('polygon',{points:'408,884 524,800 640,884',fill:'url(#mtn)'}));
+  svg.appendChild(el('polygon',{points:'524,800 640,884 566,884',fill:'#A6C2D6',opacity:.55}));
+  svg.appendChild(el('polygon',{points:'524,800 558,842 540,835 524,845 508,835 490,842',fill:'#FBFDFF'}));
+  ['M524 800 L513 838','M524 800 L535 836'].forEach(d=>svg.appendChild(el('path',{d,stroke:'#fff','stroke-width':2,opacity:.7,fill:'none'})));
+  [[250,862,15,22],[269,854,13,30],[287,866,11,18],[216,866,13,18]].forEach(b=>svg.appendChild(el('rect',{x:b[0],y:b[1],width:b[2],height:b[3],rx:1.5,fill:'#5E7180'})));
+  [[254,866],[254,874],[272,860],[272,870],[290,870]].forEach(w=>svg.appendChild(el('rect',{x:w[0],y:w[1],width:3,height:3,fill:'#FFD43B'})));
+  svg.appendChild(el('line',{x1:330,y1:884,x2:330,y2:850,stroke:'#5E7180','stroke-width':4}));
+  svg.appendChild(el('ellipse',{cx:330,cy:850,rx:15,ry:5,fill:'#C0552E'}));
+  svg.appendChild(el('line',{x1:330,y1:846,x2:330,y2:835,stroke:'#5E7180','stroke-width':2}));
+  svg.appendChild(el('circle',{cx:330,cy:834,r:2,fill:'#C0552E'}));
+  svg.appendChild(el('rect',{x:30,y:896,width:170,height:16,rx:3,fill:'#6B6F73'}));
+  svg.appendChild(el('line',{x1:42,y1:904,x2:188,y2:904,stroke:'#fff','stroke-width':2,'stroke-dasharray':'11 8'}));
+  drawJet({cx:112, cy:875, scale:0.92, dir:1, pitch:0, gear:true});
+  svg.appendChild(el('rect',{x:40,y:946,width:206,height:40,rx:11,fill:'var(--belt-deep)'}));
+  txt(143,966,'🛫 Python Cadet',{fill:'#fff','font-family':'Space Grotesk','font-weight':'700','font-size':'14'});
+  txt(143,980,'Origin: SeaTac · Start here at S1·L1',{fill:'#fff','font-family':'Lexend','font-size':'8.5',opacity:.92});
+
+  /* points bottom→top */
+  const pts=[];
+  for(let s=0;s<SPRINTS;s++)for(let l=0;l<LESSONS;l++){
+    const x=(s%2===0)?(xLeft+l*dx):(xRight-l*dx);
+    pts.push({x,y:yBottom-s*dy,s,l});
+  }
+  function cloud(cx,cy,sc){const g=el('g',{opacity:.5});[[0,0,20],[20,4,15],[-18,5,14],[6,-9,13]].forEach(c=>g.appendChild(el('ellipse',{cx:cx+c[0]*sc,cy:cy+c[1]*sc,rx:c[2]*sc,ry:c[2]*sc*0.7,fill:'#fff'})));svg.appendChild(g);}
+  cloud(630,150,1.0); cloud(150,370,0.9); cloud(660,480,0.95); cloud(150,610,0.9);
+
+  let d=`M ${pts[0].x} ${pts[0].y}`;
+  for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i];
+    if(a.y===b.y)d+=` L ${b.x} ${b.y}`;
+    else{const onR=b.x>center;d+=` Q ${b.x+(onR?46:-46)} ${(a.y+b.y)/2} ${b.x} ${b.y}`;}}
+  svg.appendChild(el('path',{d,fill:'none',stroke:'#9DBE92','stroke-width':3,'stroke-dasharray':'2 9','stroke-linecap':'round'}));
+  const last=pts[pts.length-1];
+  svg.appendChild(el('path',{d:`M ${last.x} ${last.y} Q ${last.x-30} ${(last.y+150)/2} 200 154`,fill:'none',stroke:'#9DBE92','stroke-width':3,'stroke-dasharray':'2 9','stroke-linecap':'round'}));
+
+  for(let s=0;s<SPRINTS;s++){
+    const rowY=yBottom-s*dy, onLeft=(s%2===0), lx=onLeft?44:736;
+    svg.appendChild(el('rect',{x:lx-22,y:rowY-15,width:44,height:30,rx:8,fill:'var(--belt)'}));
+    txt(lx,rowY-2,'Sprint',{fill:'#fff','font-family':'Lexend','font-size':'7.5',opacity:.9});
+    txt(lx,rowY+11,'S'+(s+1),{fill:'#fff','font-family':'Space Grotesk','font-weight':'700','font-size':'11'});
+  }
+  pts.forEach(p=>{
+    const mile=(p.l===LESSONS-1),r=mile?16:13;
+    svg.appendChild(el('circle',{cx:p.x,cy:p.y,r:r+3,fill:'#fff'}));
+    svg.appendChild(el('circle',{cx:p.x,cy:p.y,r,fill:'#fff',stroke:'var(--belt)','stroke-width':mile?2.6:2}));
+    txt(p.x,p.y+4,(p.l+1),{fill:'var(--belt-deep)','font-family':'Space Grotesk','font-weight':'600','font-size':mile?'12':'11'});
+    if(mile) txt(p.x+(p.s%2===0?20:-20),p.y-12,'🚩',{'font-size':'15'});
+  });
+})();
+</script>
+</body>
+</html>
