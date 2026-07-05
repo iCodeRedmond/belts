@@ -1,2 +1,2 @@
-# belts
-What are all the belts that we currently have active?
+## TODO:
+- take inventory of active belts
